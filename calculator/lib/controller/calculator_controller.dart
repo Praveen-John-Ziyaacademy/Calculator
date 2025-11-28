@@ -1,13 +1,34 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'dart:math' as math;
 
 class CalculatorController extends GetxController {
+  final box = GetStorage();
+
   var inputExp = ''.obs;
   var result = ''.obs;
   var showResult = false.obs;
   var calculatorMode = 'basic'.obs;
   var history = <String>[].obs;
   var showHistory = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadHistory();
+  }
+
+  void loadHistory() {
+    List<dynamic>? saved = box.read("calc_history");
+
+    if (saved != null) {
+      history.assignAll(saved.map((e) => e.toString()).toList());
+    }
+  }
+
+  void saveHistory() {
+    box.write("calc_history", history.toList());
+  }
 
   void addInput(String value) {
     showResult.value = false;
@@ -16,19 +37,15 @@ class CalculatorController extends GetxController {
 
     if (ops.contains(value)) {
       if (inputExp.value.isEmpty) {
-        // allow negative only at first position
         if (value == '-') inputExp.value = '-';
         return;
       }
 
       final last = inputExp.value[inputExp.value.length - 1];
 
-      // ❌ Prevent repeated operators (including negative)
       if (ops.contains(last)) {
-        // case: user pressed "-" but last is also "-"
         if (last == '-' && value == '-') return;
 
-        // Replace last operator with new operator
         inputExp.value =
             inputExp.value.substring(0, inputExp.value.length - 1) + value;
         return;
@@ -59,6 +76,7 @@ class CalculatorController extends GetxController {
 
   void clearHistory() {
     history.clear();
+    saveHistory();
   }
 
   void deleteLastChar() {
@@ -90,6 +108,8 @@ class CalculatorController extends GetxController {
       String historyItem = "${inputExp.value} = ${result.value}";
       history.insert(0, historyItem);
       if (history.length > 50) history.removeLast();
+
+      saveHistory(); // 🔥 auto save
     } catch (e) {
       result.value = "Error";
       showResult.value = true;
@@ -162,6 +182,8 @@ class CalculatorController extends GetxController {
       String historyItem = "$func($value) = ${inputExp.value}";
       history.insert(0, historyItem);
       if (history.length > 50) history.removeLast();
+
+      saveHistory(); // 🔥 save
     } catch (e) {
       result.value = "Error";
       showResult.value = true;
@@ -198,13 +220,9 @@ class CalculatorController extends GetxController {
     for (int i = 0; i < exp.length; i++) {
       final ch = exp[i];
 
-      // Handle negative number (unary minus)
       if (ch == '-') {
-        // Case 1: Negative at start: "-5+3"
-        // Case 2: Negative after operator: "5*-3"
-        // Case 3: Negative after opening bracket: "(-3+5)"
         if (i == 0 || operators.contains(exp[i - 1]) || exp[i - 1] == '(') {
-          current.write(ch); // attach minus to number
+          current.write(ch);
           continue;
         }
       }
@@ -260,7 +278,7 @@ class CalculatorController extends GetxController {
           outputQueue.add(opStack.removeLast());
         }
         if (opStack.isNotEmpty) {
-          opStack.removeLast(); // Remove '('
+          opStack.removeLast();
         }
       } else if (precedence.containsKey(token)) {
         while (opStack.isNotEmpty &&
