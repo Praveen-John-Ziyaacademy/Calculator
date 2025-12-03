@@ -42,22 +42,18 @@ class CalculatorController extends GetxController {
   void addInput(String value) {
     showResult.value = false;
 
-    // Handle % button
     if (value == '%') {
       if (inputExp.value.isEmpty) return;
 
-      // Get the last number (after last operator or start)
       int lastOpIndex = inputExp.value.lastIndexOf(RegExp(r'[+\-×÷(]'));
       String lastPart = lastOpIndex == -1
           ? inputExp.value
           : inputExp.value.substring(lastOpIndex + 1);
 
-      // Remove any existing % or trailing dot
       lastPart = lastPart.replaceAll('%', '').trim();
 
       if (lastPart.isEmpty || !_isNumber(lastPart)) return;
 
-      // Don't allow double %%
       if (inputExp.value.endsWith('%')) return;
 
       inputExp.value += '%';
@@ -74,7 +70,6 @@ class CalculatorController extends GetxController {
 
       final last = inputExp.value[inputExp.value.length - 1];
 
-      // Don't allow operator right after %
       if (last == '%') return;
 
       if (ops.contains(last)) {
@@ -274,8 +269,9 @@ class CalculatorController extends GetxController {
 
     String formatted = value.toStringAsFixed(10);
     formatted = formatted.replaceAll(RegExp(r'0+$'), '');
-    if (formatted.endsWith('.'))
+    if (formatted.endsWith('.')) {
       formatted = formatted.substring(0, formatted.length - 1);
+    }
     return formatted.isEmpty ? "0" : formatted;
   }
 
