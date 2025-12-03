@@ -19,16 +19,6 @@ class _CalculatorScreenState extends State<CalculatorScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _modeAnimationController;
 
-  // static const platform = MethodChannel("app.channel.shared.data");
-
-  // void _enterFloatingWindowMode() async {
-  //   try {
-  //     await platform.invokeMethod("enterFloatingWindow");
-  //   } catch (e) {
-  //     print("Error entering floating window: $e");
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -84,21 +74,7 @@ class _CalculatorScreenState extends State<CalculatorScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          // IconButton(
-                          //   icon: const Icon(
-                          //     Icons.picture_in_picture,
-                          //     color: Colors.black,
-                          //   ),
-                          //   tooltip: "Floating Window",
-                          //   onPressed: () {
-                          //     HapticFeedback.lightImpact();
-                          //     _enterFloatingWindowMode();
-                          //   },
-                          // ),
-                        ],
-                      ),
+                      Row(children: []),
                       PopupMenuButton<int>(
                         offset: Offset(0.w, 35.h),
                         color: Colors.white,
@@ -265,7 +241,7 @@ class _CalculatorScreenState extends State<CalculatorScreen>
       _buildButtonSized("sin", Colors.blue, () => c.applyFunction('sin'), 0),
       _buildButtonSized("cos", Colors.blue, () => c.applyFunction('cos'), 0),
       _buildButtonSized("tan", Colors.blue, () => c.applyFunction('tan'), 0),
-      _buildButtonSized("√", Colors.blue, () => c.applyFunction('sqrt'), 0),
+      _buildButtonSized("√x", Colors.blue, () => c.addInput("√"), 0),
       _buildButtonSized("x²", Colors.blue, () => c.applyFunction('pow2'), 0),
       _buildButtonSized("log", Colors.blue, () => c.applyFunction('log'), 0),
       _buildButtonSized("ln", Colors.blue, () => c.applyFunction('ln'), 0),
